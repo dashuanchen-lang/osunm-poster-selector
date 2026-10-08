@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f4ef">
+    <meta name="description" content="按产品类型浏览奥森姆门窗五金海报案例，选择构图模板并回复 OSM 编号。">
+    <meta property="og:title" content="奥森姆海报模板选型册">
+    <meta property="og:description" content="按产品类型浏览真实海报案例，找到适合您的 OSM 构图模板。">
+    <meta property="og:type" content="website">
+    <title>奥森姆海报模板选型册</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./assets/templates.js" defer></script>
+    <script src="./assets/catalog.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="奥森姆海报模板选型册首页">
+        <span class="wordmark__mark" aria-hidden="true">OS</span>
+        <span>奥森姆<span class="wordmark__divider">/</span>海报选型册</span>
+      </a>
+      <a class="header-help" href="#how-to-choose">怎么选 <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="pageTitle">
+        <p class="eyebrow"><span class="eyebrow__dot"></span> OROSM · POSTER ARCHIVE</p>
+        <h1 id="pageTitle">先看产品，再挑<span>构图</span></h1>
+        <p class="hero__copy">从门窗系统、门锁到五金细节，浏览奥森姆过往海报的真实构图。找到喜欢的案例，把模板编号告诉我们。</p>
+        <div class="hero__note"><span class="hero__note-mark">01</span><span>选一张喜欢的海报 · 记下 <strong>OSM 编号</strong> · 告诉我们</span></div>
+      </section>
+
+      <section class="catalog" aria-label="海报模板案例">
+        <div class="catalog__toolbar">
+          <nav id="categoryFilters" class="category-filters" aria-label="按产品类型筛选"></nav>
+          <div class="catalog__controls">
+            <label class="search-box">
+              <span class="search-box__icon" aria-hidden="true">⌕</span>
+              <span class="sr-only">搜索模板</span>
+              <input id="searchInput" type="search" placeholder="搜索名称、编号或用途" autocomplete="off">
+              <kbd>/</kbd>
+            </label>
+            <label class="format-select">
+              <span class="sr-only">筛选模板形式</span>
+              <select id="formatFilter">
+                <option value="all">全部形式</option>
+                <option value="single">单张海报</option>
+                <option value="long">模块长图</option>
+                <option value="horizontal">横版展箱</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="catalog__meta"><p id="resultCount" aria-live="polite"></p><p>点击案例查看大图与模板说明 <span aria-hidden="true">↗</span></p></div>
+        <div id="templateWall" class="template-wall" aria-live="polite" aria-label="模板案例瀑布流"></div>
+        <div id="emptyState" class="empty-state" hidden>
+          <p class="empty-state__mark">—</p>
+          <h2>暂时没有找到匹配模板</h2>
+          <p>试试其他产品类型或关键词。</p>
+          <button id="clearFilters" class="button button--outline" type="button">清除筛选</button>
+        </div>
+      </section>
+
+      <section id="how-to-choose" class="how-to-choose">
+        <div><p class="eyebrow">HOW TO CHOOSE</p><h2>选好之后，<span>报编号就行</span></h2></div>
+        <p>打开喜欢的案例，浏览同一模板的其他版本。复制或记下模板编号，例如 <strong>OSM-11</strong>，发给我们即可。</p>
+        <a class="how-to-choose__top" href="#top" aria-label="返回顶部">↑</a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>奥森姆海报构图选型册</span>
+      <span>图片为历史案例，仅供构图与视觉风格参考。案例中的旧文案、型号、参数、二维码和品牌标记不代表新项目的默认内容。</span>
+    </footer>
+
+    <dialog id="templateDialog" class="template-dialog" aria-labelledby="dialogTitle">
+      <button class="dialog-close" type="button" aria-label="关闭模板详情">×</button>
+      <div id="dialogContent" class="template-dialog__content"></div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
