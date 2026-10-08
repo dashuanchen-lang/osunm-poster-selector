@@ -28,3 +28,16 @@ window.OSUNM_TEMPLATES = [
   { id: 'OSM-18', name: '浅色尺寸工程单品型', categories: ['门锁/碰锁/勾锁', '铰链/合页', '工程与详情页'], format: 'single', ratio: '3:4', use: '有可靠尺寸依据的单品参数补充图或 B2B 介绍。', composition: '上部标题，中部左尺寸线稿、右侧完整产品，下方浅色圆台。', tags: ['浅色', '尺寸标注', '工程单品'], cases: ['154.jpg'] },
   { id: 'OSM-19', name: '浅色极简单品展台型', categories: ['门锁/碰锁/勾锁', '执手/把手', '铰链/合页', '滑轮/推拉部件'], format: 'single', ratio: '3:4', use: '新品首屏、详情开场或极简单品品牌海报。', composition: '顶部居中标题，中央偏下单品置于白色双层圆台，上方大留白。', tags: ['极简', '单品展台', '大留白'], cases: ['155.jpg'] }
 ];
+
+const OSUNM_PRIMARY_CATEGORY = {
+  'OSM-01': '门锁/碰锁', 'OSM-02': '门锁/碰锁', 'OSM-03': '门锁/碰锁', 'OSM-04': '门锁/碰锁',
+  'OSM-05': '门窗系统套件', 'OSM-06': '门窗系统套件', 'OSM-07': '滑轮/推拉部件', 'OSM-08': '执手/把手',
+  'OSM-09': '门窗系统套件', 'OSM-10': '门窗系统套件', 'OSM-11': '门窗系统套件', 'OSM-12': '门窗系统套件',
+  'OSM-13': '铰链/合页', 'OSM-14': '勾锁/长传动件', 'OSM-15': '勾锁/长传动件', 'OSM-16': '勾锁/长传动件',
+  'OSM-17': '勾锁/长传动件', 'OSM-18': '勾锁/长传动件', 'OSM-19': '通用单品'
+};
+
+for (const template of window.OSUNM_TEMPLATES) {
+  template.category = OSUNM_PRIMARY_CATEGORY[template.id];
+  delete template.categories;
+}

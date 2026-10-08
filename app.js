@@ -1,7 +1,9 @@
 (function () {
   'use strict';
 
-  const categories = ['全部模板', '门窗系统五金', '门锁/碰锁/勾锁', '执手/把手', '铰链/合页', '滑轮/推拉部件', '工程与详情页'];
+  const categoryOrder = ['门窗系统套件', '门锁/碰锁', '勾锁/长传动件', '执手/把手', '铰链/合页', '滑轮/推拉部件', '通用单品'];
+  const availableCategories = new Set(window.OSUNM_TEMPLATES.map((template) => template.category));
+  const categories = ['全部模板', ...categoryOrder.filter((category) => availableCategories.has(category))];
   const categoryFilters = document.querySelector('#categoryFilters');
   const searchInput = document.querySelector('#searchInput');
   const formatFilter = document.querySelector('#formatFilter');
@@ -30,7 +32,8 @@
     categoryFilters.innerHTML = categories.map((category, index) => {
       const value = index === 0 ? 'all' : category;
       const selected = activeCategory === value;
-      return `<button class="category-chip${selected ? ' is-active' : ''}" type="button" data-category="${escapeHtml(value)}" aria-pressed="${selected}">${escapeHtml(category)}</button>`;
+      const count = index === 0 ? templates.length : templates.filter((template) => template.category === category).length;
+      return `<button class="category-chip${selected ? ' is-active' : ''}" type="button" data-category="${escapeHtml(value)}" aria-pressed="${selected}"><span>${escapeHtml(category)}</span><span class="category-count" aria-label="${count} 款">${count}</span></button>`;
     }).join('');
   }
 
@@ -40,7 +43,8 @@
       format: formatFilter.value,
       query: searchInput.value
     });
-    resultCount.textContent = `找到 ${shown.length} 款模板 · 共 19 款`;
+    const activeName = activeCategory === 'all' ? '' : ` · ${activeCategory}`;
+    resultCount.textContent = `当前显示 ${shown.length} 款模板${activeName}`;
     emptyState.hidden = shown.length !== 0;
     wall.innerHTML = shown.map((template) => {
       const image = template.cases[0];

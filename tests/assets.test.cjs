@@ -60,7 +60,7 @@ test('site shell exposes the customer browsing and template preview landmarks', 
   }
 });
 
-test('template catalog covers all 19 OSM templates with valid multi-category case references', () => {
+test('template catalog assigns exactly one specific product family to each OSM template', () => {
   const sourcePath = path.join(root, 'assets', 'templates.js');
   assert.ok(fs.existsSync(sourcePath), 'templates.js should exist');
   const vm = require('node:vm');
@@ -72,17 +72,16 @@ test('template catalog covers all 19 OSM templates with valid multi-category cas
 
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const knownFiles = new Set(manifest.cases.map((item) => item.file));
-  const categories = new Set(['门窗系统五金', '门锁/碰锁/勾锁', '执手/把手', '铰链/合页', '滑轮/推拉部件', '工程与详情页']);
+  const categories = new Set(['门窗系统套件', '门锁/碰锁', '勾锁/长传动件', '执手/把手', '铰链/合页', '滑轮/推拉部件', '通用单品']);
   for (const item of templates) {
     for (const key of ['name', 'format', 'ratio', 'use', 'composition', 'tags']) assert.ok(item[key], `${item.id} missing ${key}`);
-    assert.ok(Array.isArray(item.categories) && item.categories.length, `${item.id} needs categories`);
-    for (const category of item.categories) assert.ok(categories.has(category), `unknown category ${category}`);
+    assert.ok(categories.has(item.category), `${item.id} needs one specific primary category`);
     assert.ok(Array.isArray(item.cases) && item.cases.length, `${item.id} needs cases`);
     for (const file of item.cases) assert.ok(knownFiles.has(file), `${item.id} references unknown case ${file}`);
   }
 });
 
-test('catalog combines product category, format, and case-insensitive text filters', () => {
+test('catalog combines exclusive product category, format, and case-insensitive text filters', () => {
   const vm = require('node:vm');
   const context = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'assets', 'catalog.js'), 'utf8'), context);
@@ -90,8 +89,9 @@ test('catalog combines product category, format, and case-insensitive text filte
   const { filterTemplates } = context.window.OSUNM_CATALOG;
   const templates = context.window.OSUNM_TEMPLATES;
 
-  assert.deepEqual(Array.from(filterTemplates(templates, { category: '执手/把手' }).map((item) => item.id)), ['OSM-03', 'OSM-04', 'OSM-05', 'OSM-07', 'OSM-08', 'OSM-09', 'OSM-10', 'OSM-12', 'OSM-19']);
-  assert.deepEqual(Array.from(filterTemplates(templates, { category: '工程与详情页', format: 'long' }).map((item) => item.id)), ['OSM-07']);
+  assert.deepEqual(Array.from(filterTemplates(templates, { category: '执手/把手' }).map((item) => item.id)), ['OSM-08']);
+  assert.deepEqual(Array.from(filterTemplates(templates, { category: '滑轮/推拉部件', format: 'long' }).map((item) => item.id)), ['OSM-07']);
+  assert.equal(new Set(templates.map((item) => item.id)).size, templates.length, 'templates must not be duplicated across primary categories');
   assert.deepEqual(Array.from(filterTemplates(templates, { query: 'osm-14' }).map((item) => item.id)), ['OSM-14']);
   assert.deepEqual(Array.from(filterTemplates(templates, { query: '纵向长比例' }).map((item) => item.id)), ['OSM-14']);
 });
