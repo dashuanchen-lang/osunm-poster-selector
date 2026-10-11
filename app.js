@@ -50,7 +50,7 @@
       const image = template.cases[0];
       const caseInfo = window.OSUNM_CASES.find((item) => item.file === image);
       const alt = `${template.id} ${template.name}案例：${caseInfo?.caption || template.use}`;
-      const formatLabel = template.format === 'long' ? '模块长图' : template.format === 'horizontal' ? '横版展箱' : '单张海报';
+      const formatLabel = window.OSUNM_CATALOG.formatGuidance(template);
       return `<article class="template-card${template.format === 'long' ? ' template-card--long' : ''}">
         <button class="poster-button" type="button" data-template="${template.id}" aria-label="查看 ${template.id} ${escapeHtml(template.name)} 详情">
           <img class="poster-image" src="./assets/cases/${encodeURIComponent(image)}" alt="${escapeHtml(alt)}" loading="eager" decoding="async">
@@ -66,12 +66,15 @@
   function openDetails(id) {
     const template = templates.find((item) => item.id === id);
     if (!template) return;
-    const formatLabel = template.format === 'long' ? '模块长图 · 每个模块 3:4' : template.format === 'horizontal' ? '横版 · 需按横向重新布局' : '单张海报 · 3:4';
+    const formatLabel = escapeHtml(window.OSUNM_CATALOG.formatGuidance(template));
+    const guidance = escapeHtml(window.OSUNM_CATALOG.ratioGuidance(template));
     const cases = template.cases.map((file) => {
       const item = window.OSUNM_CASES.find((entry) => entry.file === file);
-      return `<figure class="detail-case"><img src="./assets/cases/${encodeURIComponent(file)}" alt="${escapeHtml(item?.caption || file)}"><figcaption>${escapeHtml(item?.caption || '历史海报案例')} · 原图完整比例</figcaption></figure>`;
+      const metric = window.OSUNM_CASE_METRICS[file];
+      const ratio = metric ? ` · 案例宽高比约 ${(metric.width / metric.height).toFixed(3)}:1` : '';
+      return `<figure class="detail-case"><img src="./assets/cases/${encodeURIComponent(file)}" alt="${escapeHtml(item?.caption || file)}"><figcaption>${escapeHtml(item?.caption || '历史海报案例')}${ratio} · 完整构图参考</figcaption></figure>`;
     }).join('');
-    dialogContent.innerHTML = `<div class="detail-layout"><div class="detail-gallery">${cases}</div><section class="detail-copy"><p class="eyebrow">POSTER TEMPLATE · ${template.id}</p><p class="detail-id">${template.id}</p><h2 id="dialogTitle">${escapeHtml(template.name)}</h2><span class="format-pill format-pill--${template.format}">${formatLabel}</span><h3>适合</h3><p>${escapeHtml(template.use)}</p><h3>构图方式</h3><p>${escapeHtml(template.composition)}</p><h3>标签</h3><div class="tag-list">${template.tags.map((tag) => `<span>#${escapeHtml(tag)}</span>`).join('')}</div><button class="button button--primary copy-template" type="button" data-copy="${template.id}">复制 ${template.id}</button><p class="detail-hint">选择后把编号告诉我们；新海报会替换为您本次确认的产品与文案。案例中的旧型号、参数及标记不会默认沿用。</p></section></div>`;
+    dialogContent.innerHTML = `<div class="detail-layout"><div class="detail-gallery">${cases}</div><section class="detail-copy"><p class="eyebrow">POSTER TEMPLATE · ${template.id}</p><p class="detail-id">${template.id}</p><h2 id="dialogTitle">${escapeHtml(template.name)}</h2><span class="format-pill format-pill--${template.format}">${formatLabel}</span><h3>比例与制作方式</h3><p>${guidance}</p><h3>适合</h3><p>${escapeHtml(template.use)}</p><h3>构图方式</h3><p>${escapeHtml(template.composition)}</p><h3>标签</h3><div class="tag-list">${template.tags.map((tag) => `<span>#${escapeHtml(tag)}</span>`).join('')}</div><button class="button button--primary copy-template" type="button" data-copy="${template.id}">复制 ${template.id}</button><p class="detail-hint">选择后把编号告诉我们；新海报会替换为您本次确认的产品与文案。案例中的旧型号、参数及标记不会默认沿用。</p></section></div>`;
     dialog.showModal();
   }
 

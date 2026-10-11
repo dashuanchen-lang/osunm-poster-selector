@@ -7,6 +7,21 @@ const root = path.resolve(__dirname, '..');
 const manifestPath = path.join(root, 'assets', 'case-manifest.json');
 const templateIds = Array.from({ length: 19 }, (_, index) => `OSM-${String(index + 1).padStart(2, '0')}`);
 
+test('single and extra-long templates expose different ratio guidance', () => {
+  const vm = require('node:vm');
+  const context = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'assets', 'catalog.js'), 'utf8'), context);
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'assets', 'case-metrics.js'), 'utf8'), context);
+  const catalog = context.window.OSUNM_CATALOG;
+  assert.ok(catalog.ratioGuidance({format: 'single'}).includes('最接近'));
+  assert.ok(catalog.ratioGuidance({format: 'long'}).includes('拼接'));
+  assert.ok(!catalog.formatGuidance({format: 'single'}).includes('3:4'));
+  const metrics = context.window.OSUNM_CASE_METRICS;
+  assert.ok(Math.abs(metrics['003.jpg'].width / metrics['003.jpg'].height - 1080 / 2337) < 0.002);
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  for (const item of manifest.cases) assert.ok(metrics[item.file]?.width > 0 && metrics[item.file]?.height > 0);
+});
+
 test('curated case manifest provides a valid local JPEG for every OSM template', () => {
   assert.ok(fs.existsSync(manifestPath), 'case-manifest.json should exist');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
