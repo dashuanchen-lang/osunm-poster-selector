@@ -9,12 +9,12 @@
     });
   }
   function formatGuidance(template) {
-    return template.format === 'long' ? '模块长图 · 分模块生成后拼接' : template.format === 'horizontal' ? '横版海报 · 按案例比例适配' : '单张海报 · 按案例比例适配';
+    return template.format === 'long' ? `模块长图 · ${template.ratio}模块` : `${template.format === 'horizontal' ? '横版' : '单张'} · ${template.ratio}`;
   }
   function ratioGuidance(template) {
     return template.format === 'long'
-      ? '特别长的详情式海报按内容拆成独立模块，逐模块设计、生成与检查后拼接；模块通常采用3:4，按信息布局适配。'
-      : '生成时从当前工具支持的固定比例中，选择最接近所选案例的一档，不要求完全相同尺寸。保留构图层级，不拉伸产品。';
+      ? `长详情页已匹配${template.ratio}独立模块，分模块生成、检查后拼接，不将整条长图压成单张。`
+      : `默认生成比例已匹配为${template.ratio}，是当前工具支持档位中最接近主案例的一档。其他案例的推荐比例见图片下方；保留层级，不拉伸产品。`;
   }
   global.OSUNM_CATALOG = { filterTemplates, formatGuidance, ratioGuidance };
 })(typeof window === 'undefined' ? globalThis : window);

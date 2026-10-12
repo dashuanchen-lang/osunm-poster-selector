@@ -70,8 +70,8 @@
     const guidance = escapeHtml(window.OSUNM_CATALOG.ratioGuidance(template));
     const cases = template.cases.map((file) => {
       const item = window.OSUNM_CASES.find((entry) => entry.file === file);
-      const metric = window.OSUNM_CASE_METRICS[file];
-      const ratio = metric ? ` · 案例宽高比约 ${(metric.width / metric.height).toFixed(3)}:1` : '';
+      const metric = window.OSUNM_RATIO_MAP.templates[template.id].cases.find((entry) => entry.file === file);
+      const ratio = metric ? ` · 原图 ${metric.width}×${metric.height} · ${template.format === 'long' ? '模块' : '推荐生成'} ${metric.recommendedRatio}` : '';
       return `<figure class="detail-case"><img src="./assets/cases/${encodeURIComponent(file)}" alt="${escapeHtml(item?.caption || file)}"><figcaption>${escapeHtml(item?.caption || '历史海报案例')}${ratio} · 完整构图参考</figcaption></figure>`;
     }).join('');
     dialogContent.innerHTML = `<div class="detail-layout"><div class="detail-gallery">${cases}</div><section class="detail-copy"><p class="eyebrow">POSTER TEMPLATE · ${template.id}</p><p class="detail-id">${template.id}</p><h2 id="dialogTitle">${escapeHtml(template.name)}</h2><span class="format-pill format-pill--${template.format}">${formatLabel}</span><h3>比例与制作方式</h3><p>${guidance}</p><h3>适合</h3><p>${escapeHtml(template.use)}</p><h3>构图方式</h3><p>${escapeHtml(template.composition)}</p><h3>标签</h3><div class="tag-list">${template.tags.map((tag) => `<span>#${escapeHtml(tag)}</span>`).join('')}</div><button class="button button--primary copy-template" type="button" data-copy="${template.id}">复制 ${template.id}</button><p class="detail-hint">选择后把编号告诉我们；新海报会替换为您本次确认的产品与文案。案例中的旧型号、参数及标记不会默认沿用。</p></section></div>`;

@@ -7,6 +7,31 @@ const root = path.resolve(__dirname, '..');
 const manifestPath = path.join(root, 'assets', 'case-manifest.json');
 const templateIds = Array.from({ length: 19 }, (_, index) => `OSM-${String(index + 1).padStart(2, '0')}`);
 
+test('all 19 templates use verified precomputed ratios closest to original cases', () => {
+  const vm = require('node:vm'), context = {window: {}};
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'assets', 'ratio-map.js'), 'utf8'), context);
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'assets', 'templates.js'), 'utf8'), context);
+  const map = context.window.OSUNM_RATIO_MAP;
+  const number = ratio => ratio.split(':').reduce((a,b) => Number(a)/Number(b));
+  assert.equal(map.verifiedDate, '2026-10-12');
+  assert.equal(Object.keys(map.templates).length, 19);
+  assert.ok(!map.supportedRatios.includes('1:2'));
+  for (const template of context.window.OSUNM_TEMPLATES) {
+    const record = map.templates[template.id];
+    assert.equal(template.ratio, record.defaultRatio);
+    assert.deepEqual(Array.from(record.cases, c=>c.file), Array.from(template.cases));
+    for (const c of record.cases) {
+      assert.ok(map.supportedRatios.includes(c.recommendedRatio));
+      if (record.mode === 'modular') { assert.equal(c.recommendedRatio,'3:4'); continue; }
+      const error = Math.abs(Math.log(number(c.recommendedRatio)/(c.width/c.height)));
+      for (const ratio of map.supportedRatios) assert.ok(error <= Math.abs(Math.log(number(ratio)/(c.width/c.height))) + 1e-12);
+    }
+  }
+  assert.equal(map.templates['OSM-03'].defaultRatio,'9:16');
+  assert.equal(map.templates['OSM-12'].defaultRatio,'3:2');
+  assert.equal(map.templates['OSM-12'].cases[1].recommendedRatio,'4:3');
+});
+
 test('single and extra-long templates expose different ratio guidance', () => {
   const vm = require('node:vm');
   const context = { window: {} };
